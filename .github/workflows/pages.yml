@@ -55,6 +55,61 @@ jobs:
           with open("data/svit-news.json","w",encoding="utf-8") as f:
               json.dump(out,f,ensure_ascii=False,indent=2)
 
+      - name: Nacitaj cerstve spravy Mesta Vysoke Tatry z RSS
+        shell: python
+        run: |
+          import json, os, urllib.request, xml.etree.ElementTree as ET
+          from datetime import datetime, timezone
+
+          url = "https://www.vysoketatry.sk/get_rss.php?id=1_atom_3908"
+          os.makedirs("data", exist_ok=True)
+          out = {"source": url, "updated_at": datetime.now(timezone.utc).isoformat(), "items": []}
+          try:
+              req = urllib.request.Request(url, headers={"User-Agent": "KUSIMA-web/1.0"})
+              raw = urllib.request.urlopen(req, timeout=25).read()
+              root = ET.fromstring(raw)
+              items=[]
+
+              for item in root.findall(".//item")[:30]:
+                  def txt(name):
+                      el=item.find(name)
+                      return (el.text or "").strip() if el is not None else ""
+                  items.append({
+                      "title": txt("title"),
+                      "link": txt("link"),
+                      "pubDate": txt("pubDate"),
+                      "description": txt("description")
+                  })
+
+              if not items:
+                  for entry in root.findall(".//{*}entry")[:30]:
+                      title_el=entry.find("{*}title")
+                      title="".join(title_el.itertext()).strip() if title_el is not None else ""
+                      link=""
+                      for link_el in entry.findall("{*}link"):
+                          href=(link_el.get("href") or "").strip()
+                          rel=(link_el.get("rel") or "alternate").strip()
+                          if href and rel in ("alternate", ""):
+                              link=href
+                              break
+                          if href and not link:
+                              link=href
+                      updated_el=entry.find("{*}updated") or entry.find("{*}published")
+                      updated=(updated_el.text or "").strip() if updated_el is not None else ""
+                      summary_el=entry.find("{*}summary") or entry.find("{*}content")
+                      summary="".join(summary_el.itertext()).strip() if summary_el is not None else ""
+                      if title:
+                          items.append({"title":title,"link":link,"pubDate":updated,"description":summary})
+
+              out["items"]=[x for x in items if x.get("title")][:6]
+              out["status"]="ok"
+          except Exception as exc:
+              out["status"]="error"
+              out["error"]=str(exc)
+
+          with open("data/tatry-news.json","w",encoding="utf-8") as f:
+              json.dump(out,f,ensure_ascii=False,indent=2)
+
       - name: Priprav dnesne slovenske meniny
         shell: python
         run: |
@@ -83,8 +138,9 @@ jobs:
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
           tags=[
-              '<script src="home-panels.js"></script>',
-              '<script src="rss-svit.js"></script>',
+              '<script src="home-panels.js?v=20260906-2"></script>',
+              '<script src="rss-svit.js?v=1"></script>',
+              '<script src="rss-tatry.js?v=1"></script>',
               '<script src="topbar-contact.js"></script>',
               '<script src="layout-master.js"></script>',
               '<script src="chime.js"></script>'
