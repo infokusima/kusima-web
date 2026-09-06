@@ -16,6 +16,12 @@
   css.id='kusima-layout-master';
   document.head.appendChild(css);
 
+  const compact=document.createElement('link');
+  compact.rel='stylesheet';
+  compact.href='subpages-compact-v1.css?v=20260906-1';
+  compact.id='kusima-subpages-compact';
+  document.head.appendChild(compact);
+
   /* Ak niektory starsi skript prida historicky CSS neskor, hned ho vyradime. */
   new MutationObserver(()=>disableLegacy()).observe(document.head,{childList:true});
 
