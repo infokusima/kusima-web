@@ -1,12 +1,21 @@
 (function(){
   ['rooms-v2.css','home-v3.css'].forEach(href=>{const l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.appendChild(l);});
 
-  // Pracovné logo podľa dodaného vzoru.
   document.querySelectorAll('.logo img').forEach(img=>{img.src='assets/logo-kusima.svg';img.alt='KUSIMA';});
 
-  // Na webe nechceme zobrazovať SOI ako odporúčaný zdroj.
   if(typeof sources!=='undefined' && sources.soi) delete sources.soi;
   if(typeof nodes!=='undefined') Object.values(nodes).forEach(n=>{if(Array.isArray(n.src)) n.src=n.src.filter(x=>x!=='soi');});
+
+  /* Upratovanie pracovnych textov. Co este nema hotove napojenie, oznacime jednoducho Pripravujeme. */
+  if(typeof nodes!=='undefined'){
+    if(nodes.surveyproposal){
+      nodes.surveyproposal.title='Anketa a zisťovanie názoru';
+      nodes.surveyproposal.html=`<p>Ak netreba hneď právne záväzné hlasovanie, vieme rýchlo zistiť názor vlastníkov cez Google Forms. Odpovede sa môžu zbierať do Google Sheets a výsledok vieme prehľadne vyhodnotiť.</p><div class="notice"><strong>Anketa nie je automaticky zákonné hlasovanie.</strong> Použijeme ju na prieskum alebo prípravu rozhodnutia.</div><div class="placeholder"><b>Google Forms</b><span>Automatické zapínanie aktívnych ankiet priamo z webu pripravujeme.</span></div>`;
+    }
+    if(nodes.voting && typeof nodes.voting.html==='string'){
+      nodes.voting.html=nodes.voting.html.replace('<div class="placeholder"><b>GOOGLE FORMS</b>','<div class="placeholder"><b>Google Forms</b>');
+    }
+  }
 
   const roomMap={
     client:['kitchen','· naša kuchyňa'],problem:['kitchen','· naša kuchyňa'],arrange:['kitchen','· naša kuchyňa'],objection:['kitchen','· naša kuchyňa'],proposal:['kitchen','· naša kuchyňa'],
@@ -33,7 +42,6 @@
     };
   }
 
-  // Záujemca o správu = naša obývačka.
   const prospect=document.createElement('section');
   prospect.id='prospectView'; prospect.className='view room-shell'; prospect.dataset.room='living';
   prospect.innerHTML=`
@@ -70,8 +78,11 @@
   document.addEventListener('click',e=>{const row=e.target.closest('.copy-line');if(row) copyText(row.dataset.copy,row.querySelector('i'));});
   window.copySupplierData=function(btn){copyText(['KUSIMA, s.r.o. SVIT','Sídlo: Rovná 599/17, 058 01 Poprad','IČO: 36450090','DIČ: 2020015833','IČ DPH: nie sme platiteľom DPH','IBAN: SK79 0200 0000 0013 8969 3857','E-mail: info.kusima@gmail.com','Telefón: +421 919 231 998','Kancelária: Mierová 177, 059 21 Svit','Obchodný register: Okresný súd Prešov, oddiel Sro, vložka 10657/P'].join('\n'),btn);};
 
-  // Titulka: pozdrav, väčší dátum/hodiny a 10 regionálnych záberov po 30 sekundách.
   const greeting=document.querySelector('#home .hero-glass-label'); if(greeting) greeting.textContent='Pekný deň praje Váš správca';
+  const daily=document.querySelectorAll('#home .hero-glass-small span');
+  if(daily[0]) daily[0].innerHTML='<span class="preparing-badge">Pripravujeme</span> &nbsp; Meniny';
+  if(daily[1]) daily[1].innerHTML='<a href="https://www.svit.sk/mesto/aktuality/" target="_blank" rel="noopener">Čerstvé správy zo Svitu ↗</a> &nbsp; <span class="preparing-badge">RSS pripravujeme</span>';
+
   const photo=document.querySelector('#home .hero-photo>img');
   let credit=document.querySelector('#home .hero-credit');
   if(credit){const a=document.createElement('a');a.className='hero-credit';a.target='_blank';a.rel='noopener';credit.replaceWith(a);credit=a;}
