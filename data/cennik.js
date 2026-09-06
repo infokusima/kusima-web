@@ -1,9 +1,16 @@
 window.KUSIMA_CENNIK={
   aktualizovane:'06.09.2026',
-  poznamka:'Ceny za výkon správy sa riadia konkrétnou zmluvou o výkone správy daného domu. Doplnkové služby sa účtujú len vtedy, ak nie sú zahrnuté v dohodnutom rozsahu správy.',
+  poznamka:'Cenník vychádza z doterajšieho cenníka KUSIMA platného od roku 2024. Uvedené ceny sú orientačné; dohodnutá cena je súčasťou konkrétnej zmluvy o výkone správy a môže zohľadňovať ročnú mieru inflácie. KUSIMA s.r.o. nie je platiteľom DPH.',
   polozky:[
-    {sluzba:'Výkon správy bytového domu',cena:'podľa zmluvy o výkone správy',poznamka:'mesačný správcovský poplatok dohodnutý s vlastníkmi'},
-    {sluzba:'Bežná komunikácia, evidencia porúch a štandardná agenda správcu',cena:'v rámci výkonu správy',poznamka:'ak zmluva konkrétneho domu neurčuje inak'},
-    {sluzba:'Úkony a služby mimo dohodnutého rozsahu správy',cena:'cena dohodnutá vopred',poznamka:'podľa rozsahu úkonu alebo osobitnej dohody'}
+    {sluzba:'Správa bytu v bytovom dome od 20 do 50 bytov',cena:'od 6 € / mesiac',poznamka:'za byt'},
+    {sluzba:'Správa bytu v bytovom dome do 20 a nad 50 bytov',cena:'dohodou',poznamka:'za byt / mesiac'},
+    {sluzba:'Správa domovej kotolne bez obsluhy',cena:'od 50 € / mesiac',poznamka:''},
+    {sluzba:'Správa domovej výmenníkovej stanice tepla bez obsluhy',cena:'od 40 € / mesiac',poznamka:''},
+    {sluzba:'Servisné výjazdy a opravy vlastnými kapacitami správcu',cena:'15 € / hod.',poznamka:''},
+    {sluzba:'Príprava a realizácia písomného hlasovania',cena:'30 €',poznamka:''},
+    {sluzba:'Zvolanie mimoriadnej schôdze',cena:'30 €',poznamka:''},
+    {sluzba:'Vystavenie potvrdenia pre kataster alebo banku',cena:'20 €',poznamka:''},
+    {sluzba:'Vyhľadávanie dokumentov na žiadosť vlastníka v archíve',cena:'15 € / hod.',poznamka:''},
+    {sluzba:'Hotovostné operácie v pokladni',cena:'neposkytujeme',poznamka:'aktuálne správca hotovostné operácie nerealizuje'}
   ]
 };
