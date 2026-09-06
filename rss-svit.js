@@ -1,5 +1,5 @@
 (function(){
-  const target=document.querySelectorAll('#home .hero-glass-small span')[1];
+  const target=document.getElementById('svitNewsLink');
   if(!target) return;
   const fallback='https://www.svit.sk/mesto/aktuality/';
 
@@ -8,16 +8,11 @@
     .then(data=>{
       const item=data&&Array.isArray(data.items)?data.items[0]:null;
       if(!item||!item.title) return;
-      target.textContent='';
-      const label=document.createElement('span');
-      label.className='rss-city-label';
-      label.textContent='Mesto Svit';
-      const a=document.createElement('a');
-      a.href=item.link||fallback;
-      a.target='_blank';
-      a.rel='noopener';
-      a.textContent=item.title+' ↗';
-      target.append(label,document.createTextNode(' · '),a);
+      target.href=item.link||fallback;
+      target.textContent=item.title+' ↗';
     })
-    .catch(()=>{});
+    .catch(()=>{
+      target.href=fallback;
+      target.textContent='Aktuality Mesta Svit ↗';
+    });
 })();
