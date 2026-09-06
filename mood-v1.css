@@ -34,6 +34,6 @@ main,.topbar{position:relative!important;z-index:2!important}
 #home .route{background-color:rgba(255,255,255,.985)!important}
 #home .hero-glass{background:rgba(255,255,252,.97)!important}
 
-/* --- KUSIMA: priatelskejsia titulka --- */
-#home .hero-copy h1{color:#1d2924!important;font-size:clamp(31px,2.75vw,43px)!important;line-height:1.04!important;font-weight:720!important;letter-spacing:-.03em!important;max-width:15ch!important}
+/* --- KUSIMA: titulka - siroka, kompaktna a dominantna --- */
+#home .hero-copy h1{color:#0b5f69!important;font-family:"Arial Black","Trebuchet MS","Segoe UI",sans-serif!important;font-size:clamp(34px,3vw,47px)!important;line-height:.98!important;font-weight:900!important;letter-spacing:-.045em!important;max-width:15ch!important;text-shadow:0 1px 0 rgba(255,255,255,.55)!important}
 #home .lead{color:#161c19!important;font-size:clamp(17px,1.28vw,19px)!important;font-weight:720!important;line-height:1.43!important}
