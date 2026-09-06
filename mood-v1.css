@@ -48,3 +48,6 @@ main,.topbar{
 #home .hero-glass{
   background:rgba(255,255,252,.97)!important;
 }
+
+/* --- KUSIMA: vyrazny uvodny riadok --- */
+#home .lead{color:#111!important;font-weight:700!important}
