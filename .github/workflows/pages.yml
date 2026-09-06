@@ -86,7 +86,8 @@ jobs:
               '<script src="home-panels.js"></script>',
               '<script src="rss-svit.js"></script>',
               '<script src="topbar-contact.js"></script>',
-              '<script src="layout-master.js"></script>'
+              '<script src="layout-master.js"></script>',
+              '<script src="chime.js"></script>'
           ]
           for tag in tags:
               if tag not in s:
