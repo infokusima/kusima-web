@@ -19,7 +19,7 @@
 
   disableLegacy();
   ensureCss('kusima-layout-master','layout-v1.css?v=20260906-1');
-  ensureCss('kusima-mood','mood-v1.css?v=20260906-5');
+  ensureCss('kusima-mood','mood-v1.css?v=20260906-6');
   new MutationObserver(()=>disableLegacy()).observe(document.head,{childList:true});
 
   const nameday=document.querySelector('#home .nameday-label');
