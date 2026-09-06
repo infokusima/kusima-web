@@ -1,21 +1,26 @@
 (function(){
   'use strict';
 
-  // KUSIMA – jemná generovaná cinkohra bez MP3.
-  // Web Audio API: krátky úvodný motív + veľmi riedke zvončeky na pozadí.
+  // KUSIMA – svieža generovaná cinkohra bez MP3.
+  // Krátke svetlé arpeggiá + pohyblivé drobné motívy na pozadí.
 
   let ctx = null;
   let master = null;
   let ambienceTimer = null;
   let started = false;
 
-  const NOTES = [
-    587.33,  // D5
-    659.25,  // E5
-    739.99,  // F#5
-    880.00,  // A5
-    987.77,  // B5
-    1174.66  // D6
+  const F = {
+    D5:587.33, E5:659.25, Fs5:739.99, A5:880.00, B5:987.77,
+    D6:1174.66, E6:1318.51, Fs6:1479.98, A6:1760.00, B6:1975.53,
+    D7:2349.32
+  };
+
+  const MOTIFS = [
+    [F.D6,F.Fs6,F.A6,F.Fs6],
+    [F.A5,F.D6,F.E6,F.Fs6,F.D6],
+    [F.B5,F.D6,F.Fs6,F.E6],
+    [F.D6,F.E6,F.Fs6,F.A6,F.D7],
+    [F.Fs5,F.A5,F.B5,F.D6,F.A5]
   ];
 
   function makeContext(){
@@ -25,74 +30,120 @@
 
     ctx = new AC();
     master = ctx.createGain();
-    master.gain.value = 0.038;
+    master.gain.value = 0.034;
     master.connect(ctx.destination);
     return ctx;
   }
 
-  function bell(freq, when, strength){
+  function makePan(pan){
+    if(!ctx || !ctx.createStereoPanner) return null;
+    const p = ctx.createStereoPanner();
+    p.pan.value = Math.max(-1, Math.min(1, pan || 0));
+    return p;
+  }
+
+  function bell(freq, when, strength, pan){
     if(!ctx || !master) return;
 
+    const t = Math.max(when, ctx.currentTime + 0.01);
+    const s = Math.max(0.2, Math.min(1, strength || 0.55));
     const out = ctx.createGain();
-    const dry = ctx.createGain();
-    const shimmer = ctx.createGain();
-    const osc1 = ctx.createOscillator();
-    const osc2 = ctx.createOscillator();
-    const osc3 = ctx.createOscillator();
+    const panner = makePan(pan);
+    const o1 = ctx.createOscillator();
+    const o2 = ctx.createOscillator();
+    const o3 = ctx.createOscillator();
 
-    const now = Math.max(when, ctx.currentTime + 0.01);
-    const s = Math.max(0.35, Math.min(1, strength || 0.65));
+    o1.type = 'sine';
+    o2.type = 'sine';
+    o3.type = 'triangle';
+    o1.frequency.setValueAtTime(freq, t);
+    o2.frequency.setValueAtTime(freq * 2.004, t);
+    o3.frequency.setValueAtTime(freq * 3.006, t);
 
-    osc1.type = 'sine';
-    osc2.type = 'sine';
-    osc3.type = 'triangle';
+    out.gain.setValueAtTime(0.0001, t);
+    out.gain.exponentialRampToValueAtTime(0.58 * s, t + 0.012);
+    out.gain.exponentialRampToValueAtTime(0.0001, t + 1.75);
 
-    osc1.frequency.setValueAtTime(freq, now);
-    osc2.frequency.setValueAtTime(freq * 2.006, now);
-    osc3.frequency.setValueAtTime(freq * 3.01, now);
+    o1.connect(out); o2.connect(out); o3.connect(out);
+    if(panner){ out.connect(panner); panner.connect(master); }
+    else out.connect(master);
 
-    dry.gain.setValueAtTime(0.0001, now);
-    dry.gain.exponentialRampToValueAtTime(0.72 * s, now + 0.018);
-    dry.gain.exponentialRampToValueAtTime(0.0001, now + 2.7);
+    o1.start(t); o2.start(t); o3.start(t);
+    o1.stop(t + 1.8); o2.stop(t + 1.35); o3.stop(t + 0.95);
+  }
 
-    shimmer.gain.setValueAtTime(0.0001, now);
-    shimmer.gain.exponentialRampToValueAtTime(0.18 * s, now + 0.025);
-    shimmer.gain.exponentialRampToValueAtTime(0.0001, now + 1.5);
+  function pluck(freq, when, strength, pan){
+    if(!ctx || !master) return;
 
-    osc1.connect(dry);
-    osc2.connect(shimmer);
-    osc3.connect(shimmer);
-    dry.connect(out);
-    shimmer.connect(out);
-    out.connect(master);
+    const t = Math.max(when, ctx.currentTime + 0.01);
+    const s = Math.max(0.2, Math.min(1, strength || 0.5));
+    const out = ctx.createGain();
+    const panner = makePan(pan);
+    const osc = ctx.createOscillator();
+    const overtone = ctx.createOscillator();
 
-    osc1.start(now); osc2.start(now); osc3.start(now);
-    osc1.stop(now + 2.8); osc2.stop(now + 2.2); osc3.stop(now + 1.7);
+    osc.type = 'triangle';
+    overtone.type = 'sine';
+    osc.frequency.setValueAtTime(freq, t);
+    overtone.frequency.setValueAtTime(freq * 2.01, t);
+
+    out.gain.setValueAtTime(0.0001, t);
+    out.gain.exponentialRampToValueAtTime(0.34 * s, t + 0.008);
+    out.gain.exponentialRampToValueAtTime(0.0001, t + 0.62);
+
+    osc.connect(out); overtone.connect(out);
+    if(panner){ out.connect(panner); panner.connect(master); }
+    else out.connect(master);
+
+    osc.start(t); overtone.start(t);
+    osc.stop(t + 0.68); overtone.stop(t + 0.48);
   }
 
   function opening(){
-    const t = ctx.currentTime + 0.08;
-    bell(587.33, t,       0.78); // D5
-    bell(739.99, t+0.48,  0.65); // F#5
-    bell(880.00, t+1.03,  0.72); // A5
-    bell(1174.66,t+1.68,  0.48); // D6
+    const t = ctx.currentTime + 0.06;
+
+    // Svetlý, rýchly podpis: ako ranné slnko a pár kvapiek na skle.
+    pluck(F.D5,  t,       0.72,-0.45);
+    pluck(F.A5,  t+0.17,  0.62,-0.18);
+    pluck(F.D6,  t+0.34,  0.72, 0.10);
+    pluck(F.Fs6, t+0.51,  0.62, 0.38);
+    bell (F.A6,  t+0.70,  0.54, 0.62);
+
+    pluck(F.E6,  t+0.98,  0.50, 0.30);
+    pluck(F.B5,  t+1.14,  0.46,-0.12);
+    pluck(F.D6,  t+1.31,  0.56,-0.36);
+    bell (F.Fs6, t+1.52,  0.48, 0.10);
+    bell (F.D7,  t+1.86,  0.34, 0.50);
+  }
+
+  function playMotif(){
+    if(!ctx || ctx.state !== 'running') return;
+
+    const motif = MOTIFS[Math.floor(Math.random() * MOTIFS.length)];
+    const t = ctx.currentTime + 0.03;
+    const step = 0.17 + Math.random() * 0.10;
+    const leftToRight = Math.random() > 0.5;
+
+    motif.forEach(function(freq, i){
+      const pos = motif.length <= 1 ? 0 : i / (motif.length - 1);
+      const pan = leftToRight ? (-0.58 + pos * 1.16) : (0.58 - pos * 1.16);
+      pluck(freq, t + i * step, 0.31 + Math.random() * 0.15, pan);
+    });
+
+    // Občas nech posledný tón dlhšie zažiari.
+    if(Math.random() < 0.62){
+      const last = motif[motif.length - 1];
+      bell(last, t + motif.length * step + 0.08, 0.24 + Math.random() * 0.13, leftToRight ? 0.45 : -0.45);
+    }
   }
 
   function nextAmbience(){
     if(!started || !ctx) return;
 
-    const delay = 4200 + Math.random() * 5200;
+    // Dynamickejšie než pôvodná verzia, stále však nie nepretržitá melódia.
+    const delay = 3200 + Math.random() * 3800;
     ambienceTimer = setTimeout(function(){
-      if(ctx.state === 'running'){
-        const t = ctx.currentTime + 0.03;
-        const n = NOTES[Math.floor(Math.random() * NOTES.length)];
-        bell(n, t, 0.38 + Math.random() * 0.22);
-
-        if(Math.random() < 0.34){
-          const n2 = NOTES[Math.floor(Math.random() * NOTES.length)];
-          bell(n2, t + 0.45 + Math.random() * 0.55, 0.28 + Math.random() * 0.16);
-        }
-      }
+      playMotif();
       nextAmbience();
     }, delay);
   }
@@ -109,19 +160,15 @@
       started = true;
       opening();
       nextAmbience();
-    }catch(e){
-      // Ak prehliadač prvý pokus nepovolí, ďalší pokus príde pri prvej interakcii.
-    }
+    }catch(e){}
   }
 
-  // Pokus o zvuk okamžite po načítaní.
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', start, {once:true});
   }else{
     start();
   }
 
-  // Tichá poistka pre prehliadače, ktoré AudioContext najprv pozastavia.
   ['pointerdown','keydown','touchstart'].forEach(function(ev){
     window.addEventListener(ev, start, {once:true, passive:true});
   });
