@@ -49,5 +49,6 @@ main,.topbar{
   background:rgba(255,255,252,.97)!important;
 }
 
-/* --- KUSIMA: vyrazny uvodny riadok --- */
-#home .lead{color:#111!important;font-weight:700!important}
+/* --- KUSIMA: titulka a uvodny riadok --- */
+#home .hero-copy h1{font-size:clamp(44px,4.05vw,64px)!important;line-height:1!important}
+#home .lead{color:#0d0f0e!important;font-size:clamp(17px,1.28vw,19px)!important;font-weight:760!important;line-height:1.42!important}
