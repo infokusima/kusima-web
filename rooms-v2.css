@@ -1,0 +1,31 @@
+/* KUSIMA – miestnostný vizuál v2: fotografie sú zámerne viditeľné po okrajoch a strácajú sa do bieleho stredu. */
+.room-shell{position:relative;min-height:100vh;background:#f9fbf9;isolation:isolate;overflow:hidden}
+.room-shell::before,.room-shell::after{content:"";position:fixed;top:58px;bottom:0;width:min(25vw,390px);pointer-events:none;z-index:0;background-image:var(--room-img);background-repeat:no-repeat;background-size:cover;opacity:.48;filter:saturate(.72) contrast(.94) brightness(1.04)}
+.room-shell::before{left:0;background-position:26% center;-webkit-mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.92) 34%,rgba(0,0,0,.48) 66%,transparent 100%);mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.92) 34%,rgba(0,0,0,.48) 66%,transparent 100%)}
+.room-shell::after{right:0;background-position:74% center;-webkit-mask-image:linear-gradient(270deg,#000 0%,rgba(0,0,0,.92) 34%,rgba(0,0,0,.48) 66%,transparent 100%);mask-image:linear-gradient(270deg,#000 0%,rgba(0,0,0,.92) 34%,rgba(0,0,0,.48) 66%,transparent 100%)}
+.room-shell>*{position:relative;z-index:1}
+.room-shell[data-room="hall"]{--room-img:url('https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1800&q=78')}
+.room-shell[data-room="kitchen"]{--room-img:url('https://images.unsplash.com/photo-1778088442657-eb0b0491b48c?auto=format&fit=crop&w=1800&q=78')}
+.room-shell[data-room="living"]{--room-img:url('https://images.unsplash.com/photo-1771888703723-01d85da1dae1?auto=format&fit=crop&w=1800&q=78')}
+.room-shell[data-room="workshop"]{--room-img:url('https://images.unsplash.com/photo-1760310936486-4dd450aab2a8?auto=format&fit=crop&w=1800&q=78')}
+.room-shell[data-room="office"]{--room-img:url('https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1800&q=78')}
+.room-shell[data-room="pantry"]{--room-img:url('https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1800&q=78')}
+.room-shell[data-room="terrace"]{--room-img:url('https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1800&q=78')}
+
+/* Čitateľný biely stred, ale nie sterilná krabica. */
+#dialogView .dialog,.supplier-page,.prospect-page,.explore{position:relative}
+#dialogView .dialog:before,.supplier-page:before,.prospect-page:before,.explore:before{content:"";position:absolute;z-index:-1;top:-18px;bottom:-30px;left:7%;right:7%;background:rgba(249,251,249,.88);filter:blur(22px);border-radius:48px}
+
+.room-caption{display:flex;align-items:baseline;gap:9px;width:max-content;max-width:100%;margin:0 0 16px;padding:7px 11px;border:1px solid rgba(183,202,192,.75);border-radius:999px;background:rgba(255,255,255,.76);backdrop-filter:blur(10px);box-shadow:0 7px 22px rgba(27,58,47,.05)}
+.room-caption strong{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#214d40}
+.room-caption small{font-size:11px;color:#7a8781}
+
+/* Obývačka – záujemca o správu */
+.prospect-page{padding:26px 0 68px}.prospect-head{max-width:790px;margin-bottom:24px}.prospect-head h2{font-size:clamp(42px,5.6vw,70px);line-height:.98;letter-spacing:-.052em;margin:6px 0 16px}.prospect-head>p:last-child{font-size:17px;line-height:1.62;color:#5e6964;max-width:730px}.prospect-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.prospect-card{min-height:220px;padding:22px;border:1px solid rgba(214,226,219,.95);border-radius:22px;background:rgba(255,255,255,.84);backdrop-filter:blur(10px);box-shadow:0 14px 42px rgba(28,55,46,.06)}.prospect-card .room-icon{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:#e9f2ed;color:#285244;font-size:17px;margin-bottom:30px}.prospect-card h3{font-size:20px;letter-spacing:-.025em;margin:0 0 8px}.prospect-card p{font-size:13px;line-height:1.55;color:#68746e;margin:0}.prospect-cta{margin-top:14px;padding:23px 24px;border:1px solid #d8e4dd;border-radius:22px;background:linear-gradient(135deg,rgba(235,246,239,.94),rgba(252,247,238,.94));display:flex;justify-content:space-between;gap:20px;align-items:center}.prospect-cta h3{margin:0 0 4px;font-size:23px}.prospect-cta p{margin:0;color:#69756f;font-size:13px;line-height:1.5;max-width:670px}.prospect-cta .btn{white-space:nowrap}
+
+/* Na podstránkach chceme vidieť miestnosť; preto answer karty mierne presvitajú. */
+.answer,.supplier-card,.invoice-panel{background-color:rgba(255,255,255,.88)!important;backdrop-filter:blur(9px)}
+
+@media(max-width:1000px){.room-shell::before,.room-shell::after{width:20vw;opacity:.36}.prospect-grid{grid-template-columns:1fr 1fr}.prospect-card:last-child{grid-column:span 2}}
+@media(max-width:720px){.room-shell::before,.room-shell::after{width:16vw;opacity:.24}.room-caption small{display:none}.prospect-grid{grid-template-columns:1fr}.prospect-card:last-child{grid-column:auto}.prospect-cta{align-items:flex-start;flex-direction:column}}
+@media(max-width:520px){.room-shell::before,.room-shell::after{display:none}.prospect-page{padding-top:18px}}
