@@ -1,13 +1,14 @@
 (function(){
   'use strict';
 
-  // KUSIMA – svieža generovaná cinkohra bez MP3.
-  // Krátke svetlé arpeggiá + pohyblivé drobné motívy na pozadí.
+  // KUSIMA – nočný zvukový režim 20:00–06:00 (Europe/Bratislava).
+  // Svieža generovaná cinkohra bez MP3.
 
   let ctx = null;
   let master = null;
   let ambienceTimer = null;
   let started = false;
+  let nightCheckTimer = null;
 
   const F = {
     D5:587.33, E5:659.25, Fs5:739.99, A5:880.00, B5:987.77,
@@ -22,6 +23,25 @@
     [F.D6,F.E6,F.Fs6,F.A6,F.D7],
     [F.Fs5,F.A5,F.B5,F.D6,F.A5]
   ];
+
+  function bratislavaHour(){
+    try{
+      const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone:'Europe/Bratislava',
+        hour:'2-digit',
+        hour12:false
+      }).formatToParts(new Date());
+      const hourPart = parts.find(p => p.type === 'hour');
+      return hourPart ? Number(hourPart.value) % 24 : new Date().getHours();
+    }catch(e){
+      return new Date().getHours();
+    }
+  }
+
+  function isNight(){
+    const h = bratislavaHour();
+    return h >= 20 || h < 6;
+  }
 
   function makeContext(){
     if(ctx) return ctx;
@@ -43,7 +63,7 @@
   }
 
   function bell(freq, when, strength, pan){
-    if(!ctx || !master) return;
+    if(!ctx || !master || !isNight()) return;
 
     const t = Math.max(when, ctx.currentTime + 0.01);
     const s = Math.max(0.2, Math.min(1, strength || 0.55));
@@ -73,7 +93,7 @@
   }
 
   function pluck(freq, when, strength, pan){
-    if(!ctx || !master) return;
+    if(!ctx || !master || !isNight()) return;
 
     const t = Math.max(when, ctx.currentTime + 0.01);
     const s = Math.max(0.2, Math.min(1, strength || 0.5));
@@ -100,9 +120,9 @@
   }
 
   function opening(){
+    if(!isNight()) return;
     const t = ctx.currentTime + 0.06;
 
-    // Svetlý, rýchly podpis: ako ranné slnko a pár kvapiek na skle.
     pluck(F.D5,  t,       0.72,-0.45);
     pluck(F.A5,  t+0.17,  0.62,-0.18);
     pluck(F.D6,  t+0.34,  0.72, 0.10);
@@ -117,7 +137,7 @@
   }
 
   function playMotif(){
-    if(!ctx || ctx.state !== 'running') return;
+    if(!ctx || ctx.state !== 'running' || !isNight()) return;
 
     const motif = MOTIFS[Math.floor(Math.random() * MOTIFS.length)];
     const t = ctx.currentTime + 0.03;
@@ -130,7 +150,6 @@
       pluck(freq, t + i * step, 0.31 + Math.random() * 0.15, pan);
     });
 
-    // Občas nech posledný tón dlhšie zažiari.
     if(Math.random() < 0.62){
       const last = motif[motif.length - 1];
       bell(last, t + motif.length * step + 0.08, 0.24 + Math.random() * 0.13, leftToRight ? 0.45 : -0.45);
@@ -138,24 +157,46 @@
   }
 
   function nextAmbience(){
-    if(!started || !ctx) return;
+    if(!started || !ctx || !isNight()) return;
 
-    // Dynamickejšie než pôvodná verzia, stále však nie nepretržitá melódia.
     const delay = 3200 + Math.random() * 3800;
     ambienceTimer = setTimeout(function(){
-      playMotif();
-      nextAmbience();
+      if(isNight()){
+        playMotif();
+        nextAmbience();
+      }else{
+        stopNightMode();
+      }
     }, delay);
   }
 
+  function stopNightMode(){
+    if(ambienceTimer){
+      clearTimeout(ambienceTimer);
+      ambienceTimer = null;
+    }
+    started = false;
+    if(master && ctx && ctx.state === 'running'){
+      const t = ctx.currentTime;
+      master.gain.cancelScheduledValues(t);
+      master.gain.setTargetAtTime(0.0001, t, 0.12);
+    }
+  }
+
   async function start(){
-    if(started) return;
+    if(started || !isNight()) return;
     const audio = makeContext();
     if(!audio) return;
 
     try{
       if(audio.state === 'suspended') await audio.resume();
-      if(audio.state !== 'running') return;
+      if(audio.state !== 'running' || !isNight()) return;
+
+      if(master){
+        const t = audio.currentTime;
+        master.gain.cancelScheduledValues(t);
+        master.gain.setTargetAtTime(0.034, t, 0.08);
+      }
 
       started = true;
       opening();
@@ -163,13 +204,21 @@
     }catch(e){}
   }
 
+  function checkMode(){
+    if(isNight()) start();
+    else stopNightMode();
+  }
+
   if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', start, {once:true});
+    document.addEventListener('DOMContentLoaded', checkMode, {once:true});
   }else{
-    start();
+    checkMode();
   }
 
   ['pointerdown','keydown','touchstart'].forEach(function(ev){
     window.addEventListener(ev, start, {once:true, passive:true});
   });
+
+  // Ak ostane stránka otvorená cez 20:00 alebo 06:00, režim sa prepne sám.
+  nightCheckTimer = setInterval(checkMode, 60000);
 })();
