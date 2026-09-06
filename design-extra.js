@@ -37,7 +37,7 @@
     };
   }
 
-  // Záujemca o správu = skutočná obývačka, nie iba názov tlačidla.
+  // Záujemca o správu = naša obývačka.
   const prospect=document.createElement('section');
   prospect.id='prospectView';
   prospect.className='view room-shell';
@@ -45,13 +45,17 @@
   prospect.innerHTML=`
     <header class="topbar shell"><a href="#" class="logo" onclick="closeProspect();return false"><img src="assets/logo-placeholder.svg" alt="KUSIMA"><span class="logo-name">KUSIMA</span></a><span class="small">Záujemca o správu <em>· naša obývačka</em></span></header>
     <main class="shell prospect-page"><button class="back" onclick="closeProspect()">← Späť na úvod</button>
-      <div class="prospect-head"><div class="room-caption"><strong>Naša obývačka</strong><small>miesto pre návštevu a prvý rozhovor</small></div><p class="eyebrow">ZÁUJEMCA O SPRÁVU</p><h2>Sadnime si k tomu normálne.</h2><p>Ak uvažujete o zmene správcu alebo práve dokončujete nový bytový dom, nemusíte najprv študovať naše služby. Povedzte nám, <strong>čo dnes nefunguje a čo od správy očakávate</strong>. Od toho sa odrazíme.</p></div>
-      <div class="prospect-grid">
-        <section class="prospect-card"><div class="room-icon">☕</div><h3>Najprv rozhovor</h3><p>Lokalita, približný počet bytov a jedna veta o tom, prečo hľadáte správcu. Na prvý kontakt to úplne stačí.</p></section>
-        <section class="prospect-card"><div class="room-icon">⌂</div><h3>Potom konkrétny návrh</h3><p>Rozsah správy, komunikácia, technická agenda, hospodárenie a cena. Nie univerzálny balík pre každý dom.</p></section>
-        <section class="prospect-card"><div class="room-icon">◎</div><h3>Referencie chránime</h3><p>Verejný zoznam spravovaných domov nezverejňujeme. Spôsob práce vieme ukázať na reálnych, primerane anonymizovaných príkladoch.</p></section>
+      <div class="prospect-head"><div class="room-caption"><strong>Naša obývačka</strong><small>miesto pre návštevu a prvý rozhovor</small></div><p class="eyebrow">ZÁUJEMCA O SPRÁVU</p><h2>Sadnime si k tomu.</h2>
+        <p class="prospect-intro"><strong>Sme malá rodinná správcovská firma.</strong> Dnes spravujeme 15 bytových domov a voľnú kapacitu máme približne na ďalšie 3 až 5. Nechceme rásť za každú cenu. Chceme si zachovať spôsob práce, pri ktorom <strong>vieme, čo robíme – a vieme aj pre koho to robíme.</strong></p>
       </div>
-      <section class="prospect-cta"><div><h3>Chcete sa len nezáväzne opýtať?</h3><p>Napíšte nám, odkiaľ ste, približný počet bytov a čo by ste chceli na súčasnej správe zmeniť. Ozveme sa normálne, bez obchodného nátlaku.</p></div><a class="btn primary" href="mailto:info.kusima@gmail.com?subject=%5BKUSIMA%5D%20Z%C3%A1ujem%20o%20spr%C3%A1vu&body=Pros%C3%ADm%20uve%C4%8Fte%3A%0A-%20mesto%20%2F%20lokalitu%0A-%20pribli%C5%BEn%C3%BD%20po%C4%8Det%20bytov%0A-%20%C4%8Do%20v%C3%A1m%20na%20s%C3%BA%C4%8Dasnej%20spr%C3%A1ve%20nevyhovuje%0A-%20kontakt%0A">Napísať KUSIMA</a></section>
+      <div class="prospect-grid prospect-grid-compact">
+        <section class="prospect-card compact"><div class="room-icon">☎</div><h3>Osobný kontakt</h3><p>Väčšinu vlastníkov poznáme osobne. Vedia, že keď zavolajú konateľovi, dostanú odpoveď, radu alebo konkrétny ďalší krok.</p></section>
+        <section class="prospect-card compact"><div class="room-icon">§</div><h3>Právne a technické zázemie</h3><p>Sledujeme legislatívne zmeny, spolupracujeme so zmluvnou právnou kanceláriou, overenými revíznymi firmami a zmluvnými majstrami pre elektrinu, vodu a kúrenie.</p></section>
+        <section class="prospect-card compact"><div class="room-icon">24</div><h3>Keď treba, sme dostupní</h3><p>Pri dôležitom probléme vieme pomôcť aj cez víkend, sviatok či počas dovolenky. Správa domu pre nás nekončí pracovnou dobou.</p></section>
+        <section class="prospect-card compact"><div class="room-icon">€</div><h3>Transparentné hospodárenie</h3><p>Nevnucujeme nepotrebné investície. Ponuky porovnávame, vysvetľujeme možnosti a s peniazmi domu hospodárime transparentne.</p></section>
+      </div>
+      <section class="prospect-belief"><p><strong>Každý nový dom je pre nás nový vzťah, nie nové číslo v databáze.</strong> Správu domu nevnímame len ako administratívu, ale aj ako zodpovednosť za miesto, kde ľudia bývajú.</p></section>
+      <section class="prospect-cta"><div><h3>Chcete sa nezáväzne porozprávať?</h3><p>Napíšte nám lokalitu, približný počet bytov a čo by ste chceli na správe svojho domu zmeniť.</p></div><a class="btn primary" href="mailto:info.kusima@gmail.com?subject=%5BKUSIMA%5D%20Z%C3%A1ujem%20o%20spr%C3%A1vu&body=Pros%C3%ADm%20uve%C4%8Fte%3A%0A-%20mesto%20%2F%20lokalitu%0A-%20pribli%C5%BEn%C3%BD%20po%C4%8Det%20bytov%0A-%20%C4%8Do%20by%20ste%20chceli%20na%20spr%C3%A1ve%20zmeni%C5%A5%0A-%20kontakt%0A">Napísať KUSIMA</a></section>
     </main>`;
   const explore=document.getElementById('exploreView');
   if(explore) document.body.insertBefore(prospect,explore); else document.body.appendChild(prospect);
