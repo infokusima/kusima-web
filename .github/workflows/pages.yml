@@ -55,16 +55,38 @@ jobs:
           with open("data/svit-news.json","w",encoding="utf-8") as f:
               json.dump(out,f,ensure_ascii=False,indent=2)
 
-      - name: Zapoj RSS klienta do titulky
+      - name: Priprav dnesne slovenske meniny
+        shell: python
+        run: |
+          import json, os, urllib.request
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+
+          os.makedirs("data", exist_ok=True)
+          now=datetime.now(ZoneInfo("Europe/Bratislava"))
+          source="https://raw.githubusercontent.com/zoltancsontos/slovak-name-days-json/master/slovak-nameday-list-shorter.json"
+          out={"date":now.strftime("%Y-%m-%d"),"name":""}
+          try:
+              req=urllib.request.Request(source,headers={"User-Agent":"KUSIMA-web/1.0"})
+              data=json.loads(urllib.request.urlopen(req,timeout=20).read().decode("utf-8"))
+              out["name"]=data[str(now.month-1)][str(now.day)]
+              out["source"]=source
+          except Exception as exc:
+              out["error"]=str(exc)
+          with open("data/nameday.json","w",encoding="utf-8") as f:
+              json.dump(out,f,ensure_ascii=False,indent=2)
+
+      - name: Zapoj dynamicke bloky do titulky
         shell: python
         run: |
           from pathlib import Path
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-          tag='<script src="rss-svit.js"></script>'
-          if tag not in s:
-              s=s.replace('</body>',tag+'</body>')
-              p.write_text(s,encoding='utf-8')
+          tags=['<script src="home-panels.js"></script>','<script src="rss-svit.js"></script>']
+          for tag in tags:
+              if tag not in s:
+                  s=s.replace('</body>',tag+'</body>')
+          p.write_text(s,encoding='utf-8')
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
