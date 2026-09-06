@@ -61,6 +61,17 @@ jobs:
           with open("data/svit-news.json", "w", encoding="utf-8") as f:
               json.dump(out, f, ensure_ascii=False, indent=2)
 
+      - name: Zapoj RSS klienta do titulky
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          tag='<script src="rss-svit.js"></script>'
+          if tag not in s:
+              s=s.replace('</body>',tag+'</body>')
+              p.write_text(s,encoding='utf-8')
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
