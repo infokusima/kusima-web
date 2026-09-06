@@ -4,6 +4,8 @@ on:
   push:
     branches: ["main"]
   workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *"
 
 permissions:
   contents: read
@@ -23,6 +25,42 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Nacitaj cerstve spravy Mesta Svit z RSS
+        shell: python
+        run: |
+          import json, os, urllib.request, xml.etree.ElementTree as ET
+          from datetime import datetime, timezone
+
+          url = "https://www.svit.sk/index.php?rss=200"
+          os.makedirs("data", exist_ok=True)
+          out = {
+              "source": url,
+              "updated_at": datetime.now(timezone.utc).isoformat(),
+              "items": []
+          }
+          try:
+              req = urllib.request.Request(url, headers={"User-Agent": "KUSIMA-web/1.0"})
+              raw = urllib.request.urlopen(req, timeout=25).read()
+              root = ET.fromstring(raw)
+              for item in root.findall(".//item")[:6]:
+                  def txt(name):
+                      el = item.find(name)
+                      return (el.text or "").strip() if el is not None else ""
+                  out["items"].append({
+                      "title": txt("title"),
+                      "link": txt("link"),
+                      "pubDate": txt("pubDate"),
+                      "description": txt("description")
+                  })
+              out["status"] = "ok"
+          except Exception as exc:
+              out["status"] = "error"
+              out["error"] = str(exc)
+
+          with open("data/svit-news.json", "w", encoding="utf-8") as f:
+              json.dump(out, f, ensure_ascii=False, indent=2)
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
