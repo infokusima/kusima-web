@@ -76,27 +76,21 @@ jobs:
           with open("data/nameday.json","w",encoding="utf-8") as f:
               json.dump(out,f,ensure_ascii=False,indent=2)
 
-      - name: Zapoj dynamicke bloky do titulky
+      - name: Zapoj dynamicke bloky a jednotny layout
         shell: python
         run: |
           from pathlib import Path
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-          tags=['<script src="home-panels.js"></script>','<script src="rss-svit.js"></script>','<script src="topbar-contact.js"></script>']
+          tags=[
+              '<script src="home-panels.js"></script>',
+              '<script src="rss-svit.js"></script>',
+              '<script src="topbar-contact.js"></script>',
+              '<script src="layout-master.js"></script>'
+          ]
           for tag in tags:
               if tag not in s:
                   s=s.replace('</body>',tag+'</body>')
-          p.write_text(s,encoding='utf-8')
-
-      - name: Zapoj responzivnu vrstvu
-        shell: python
-        run: |
-          from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-          loader='<script>(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="responsive-v1.css";document.head.appendChild(l)})();</script>'
-          if loader not in s:
-              s=s.replace('</body>',loader+'</body>')
           p.write_text(s,encoding='utf-8')
 
       - name: Configure Pages
