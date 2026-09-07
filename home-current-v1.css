@@ -1,0 +1,47 @@
+/* KUSIMA – konsolidovaný prvý náhľad titulky 2026-09-07.
+   Cieľ: prvý render zodpovedá aktuálnemu schválenému vzhľadu ešte pred JS. */
+
+#home.room-shell{
+  background:
+    radial-gradient(900px 430px at 15% 12%,rgba(255,255,255,.88) 0%,rgba(255,255,255,.42) 34%,transparent 62%),
+    radial-gradient(720px 390px at 34% 82%,rgba(255,255,255,.38) 0%,transparent 58%),
+    linear-gradient(135deg,#f2f3f4 0%,#e8eaec 46%,#dfe2e5 100%)!important;
+}
+#home.room-shell::before{display:none!important;background-image:none!important}
+#home.room-shell::after{
+  content:""!important;position:fixed!important;inset:0!important;pointer-events:none!important;z-index:0!important;
+  background:
+    linear-gradient(104deg,rgba(255,255,255,.38) 0%,rgba(255,255,255,.13) 23%,transparent 46%),
+    radial-gradient(520px 250px at 50% 8%,rgba(255,255,255,.24),transparent 70%)!important;
+}
+#home .hero-glass{background:rgba(255,249,218,.95)!important;border-color:rgba(225,202,92,.48)!important}
+#home .quicklinks a{background:rgba(255,249,218,.96)!important;border-color:rgba(222,199,92,.58)!important}
+#home .quicklinks a:hover,#home .quicklinks a:focus-visible{background:rgba(255,242,178,.98)!important;border-color:rgba(210,181,52,.72)!important}
+#home .route span:last-child b{font-weight:900!important;color:#405c52!important}
+
+/* Kompaktný kalendár/čas – staticky, aby panel po načítaní neposkakoval. */
+#home .hero-glass{left:12px!important;right:12px!important;bottom:12px!important;padding:8px 14px!important;border-radius:16px!important}
+#home .hero-glass-top{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important}
+#home .hero-glass-top>div{display:flex!important;align-items:baseline!important;gap:8px!important;min-width:0!important}
+#home .hero-glass-label{display:none!important}
+#home .hero-date{font-size:18px!important;line-height:1!important;margin:0!important;white-space:nowrap!important}
+#home .hero-time{font-size:35px!important;line-height:.9!important;white-space:nowrap!important}
+#home .hero-glass-line{margin:5px 0 4px!important}
+#home .hero-glass-small{display:flex!important;align-items:center!important;gap:7px!important;width:100%!important;min-height:26px!important;font-size:12px!important}
+#home .hero-glass-small .nameday-label{font-size:12px!important}
+#home .hero-glass-small .nameday-name{font-size:21px!important}
+#home .hero-weather{margin-left:auto;display:flex;align-items:center;justify-content:flex-end;gap:4px;min-width:max-content;color:#173d34;font-weight:900;white-space:nowrap}
+#home .hero-weather img{width:33px;height:33px;object-fit:contain;display:block;margin:-5px 0}
+#home .hero-weather-temp{font-size:22px;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+#home .hero-weather-fallback{font-size:20px;line-height:1;width:25px;text-align:center}
+
+@media(max-width:560px){
+  #home .hero-glass{padding:8px 11px!important}
+  #home .hero-glass-top{gap:7px!important}
+  #home .hero-glass-top>div{display:block!important}
+  #home .hero-date{font-size:16px!important;margin-top:2px!important}
+  #home .hero-time{font-size:31px!important}
+  #home .hero-glass-small .nameday-name{font-size:19px!important}
+  #home .hero-weather img{width:30px;height:30px}
+  #home .hero-weather-temp{font-size:20px}
+}
