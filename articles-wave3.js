@@ -115,8 +115,10 @@
     if(!content || content.querySelector('.related-articles')) return;
     const box=document.createElement('div');
     box.className='related-articles';
-    box.innerHTML=`<span class="related-label">Súvisiace články KUSIMA</span><div class="related-links">${items.map(x=>`<button type="button" data-related-article="${x[0]}">${x[1]} →</button>`).join('')}</div>`;
-    content.appendChild(box);
+    box.innerHTML=`<span class="related-label">Najprv odporúčame prečítať – možno tu nájdete odpoveď</span><div class="related-links">${items.map(x=>`<button type="button" data-related-article="${x[0]}">${x[1]} →</button>`).join('')}</div>`;
+    const roomCaption=content.querySelector('.room-caption');
+    if(roomCaption) roomCaption.insertAdjacentElement('afterend',box);
+    else content.prepend(box);
   }
 
   function init(){
@@ -162,11 +164,11 @@
     const style=document.createElement('style');
     style.id='articles-wave3-style';
     style.textContent=`
-      .related-articles{margin-top:20px;padding:15px 17px;border:1px solid #d9e4de;border-radius:17px;background:rgba(255,255,255,.88)}
-      .related-label{display:block;margin-bottom:9px;font-size:10.5px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;color:#68756f}
+      .related-articles{margin:0 0 22px;padding:17px 18px;border:1px solid #b9d6ef;border-radius:17px;background:linear-gradient(135deg,#eef7ff,#e3f1ff);box-shadow:0 8px 24px rgba(47,115,184,.08)}
+      .related-label{display:block;margin-bottom:10px;font-size:11px;font-weight:900;letter-spacing:.06em;color:#245f98}
       .related-links{display:flex;gap:8px;flex-wrap:wrap}
-      .related-links button{border:1px solid #c8d8d0;background:#f8fbf9;color:#214d40;border-radius:999px;padding:8px 12px;font-size:13px;font-weight:800;cursor:pointer}
-      .related-links button:hover{background:#eef6f2}
+      .related-links button{border:1px solid #9fc7e8;background:#dceeff;color:#174f82;border-radius:999px;padding:9px 13px;font-size:13px;font-weight:850;cursor:pointer;box-shadow:0 3px 10px rgba(47,115,184,.05)}
+      .related-links button:hover{background:#cfe7fb;border-color:#83b6df}
     `;
     document.head.appendChild(style);
   }
