@@ -26,6 +26,9 @@
   const nameday=document.querySelector('#home .nameday-label');
   if(nameday) nameday.textContent='Meniny má';
 
+  const tickerText='KUSIMA správca bytových domov v Poprade, vo Svite a okolí, KUSIMA Váš správca.';
+  document.querySelectorAll('#home .ticker .track span').forEach(span=>{span.textContent=tickerText;});
+
   if(!document.querySelector('.kusima-flowers')){
     const flowers=document.createElement('div');
     flowers.className='kusima-flowers';
