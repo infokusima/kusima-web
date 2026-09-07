@@ -1,0 +1,1 @@
+Backup marker only. Pre-weather state is preserved in branch backup-before-weather-2026-09-07 at commit 04ab01fe8783e203b9f812a88cf66f294d3be62a.
