@@ -21,6 +21,7 @@
   ensureCss('kusima-layout-master','layout-v1.css?v=20260906-1');
   ensureCss('kusima-mood','mood-v1.css?v=20260906-6');
   ensureCss('kusima-mood-v2','mood-v2.css?v=20260907-2');
+  ensureCss('kusima-preconsolidation-fixes','preconsolidation-fixes.css?v=20260907-1');
   new MutationObserver(()=>disableLegacy()).observe(document.head,{childList:true});
 
   const nameday=document.querySelector('#home .nameday-label');
