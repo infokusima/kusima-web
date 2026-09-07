@@ -55,72 +55,59 @@ jobs:
           with open("data/svit-news.json","w",encoding="utf-8") as f:
               json.dump(out,f,ensure_ascii=False,indent=2)
 
-      - name: Nacitaj aktualne oznamy Mesta Vysoke Tatry z oficialnej stranky
+      - name: Nacitaj aktualne oznamy Mesta Vysoke Tatry z oficialneho RSS
         shell: python
         run: |
-          import json, os, urllib.request
+          import html, json, os, re, urllib.request
           from datetime import datetime, timezone
-          from html.parser import HTMLParser
-          from urllib.parse import urljoin
 
-          url = "https://www.vysoketatry.sk/mid/413600/ma0/all/module_page/413600/0/.html"
+          url = "https://www.vysoketatry.sk/get_rss.php?id=1_atom_3908"
+          fallback = "https://www.vysoketatry.sk/mid/413600/ma0/all/.html"
           os.makedirs("data", exist_ok=True)
           out = {"source": url, "updated_at": datetime.now(timezone.utc).isoformat(), "items": []}
 
-          class NoticeParser(HTMLParser):
-              def __init__(self):
-                  super().__init__(convert_charrefs=True)
-                  self.in_heading=False
-                  self.heading_tag=None
-                  self.text=[]
-                  self.href=""
-                  self.started=False
-                  self.items=[]
+          def clean(value):
+              if not value:
+                  return ""
+              value=re.sub(r'<!\[CDATA\[(.*?)\]\]>', r'\1', value, flags=re.S)
+              value=re.sub(r'<[^>]+>', ' ', value)
+              return ' '.join(html.unescape(value).split()).strip()
 
-              def handle_starttag(self, tag, attrs):
-                  if tag in ("h1","h2","h3","h4"):
-                      self.in_heading=True
-                      self.heading_tag=tag
-                      self.text=[]
-                      self.href=""
-                  elif self.in_heading and tag == "a":
-                      self.href=dict(attrs).get("href","")
-
-              def handle_data(self, data):
-                  if self.in_heading:
-                      self.text.append(data)
-
-              def handle_endtag(self, tag):
-                  if self.in_heading and tag == self.heading_tag:
-                      title=" ".join(" ".join(self.text).split()).strip()
-                      low=title.lower()
-                      if "aktuálne oznamy mesta vysoké tatry" in low:
-                          self.started=True
-                      elif self.started:
-                          stop_titles=("vyhľadávač oznamov","rýchle odkazy","poloha mestského úradu","za obsah zodpovedá","technický prevádzkovateľ","informácie o stránke")
-                          if any(x in low for x in stop_titles):
-                              if self.items:
-                                  self.started=False
-                          elif len(title) >= 5 and len(self.items) < 8:
-                              link=urljoin(url,self.href) if self.href else url
-                              if not any(x["title"] == title for x in self.items):
-                                  self.items.append({"title":title,"link":link,"pubDate":"","description":""})
-                      self.in_heading=False
-                      self.heading_tag=None
-                      self.text=[]
-                      self.href=""
+          def first(pattern, text):
+              m=re.search(pattern,text,re.I|re.S)
+              return m.group(1).strip() if m else ""
 
           try:
-              req=urllib.request.Request(url,headers={"User-Agent":"KUSIMA-web/1.0"})
-              html=urllib.request.urlopen(req,timeout=25).read().decode("utf-8","replace")
-              parser=NoticeParser()
-              parser.feed(html)
-              out["items"]=parser.items[:6]
+              req=urllib.request.Request(url,headers={
+                  "User-Agent":"Mozilla/5.0 KUSIMA-web/1.0",
+                  "Accept":"application/atom+xml,application/rss+xml,application/xml,text/xml,*/*"
+              })
+              raw=urllib.request.urlopen(req,timeout=25).read().decode("utf-8","replace")
+
+              # Feed mesta obcas obsahuje znak, ktory prisny XML parser odmietne.
+              # Preto citame jednotlive entry/item bloky tolerantne ako text.
+              blocks=re.findall(r'<entry\b[^>]*>.*?</entry>',raw,re.I|re.S)
+              if not blocks:
+                  blocks=re.findall(r'<item\b[^>]*>.*?</item>',raw,re.I|re.S)
+
+              items=[]
+              for block in blocks[:20]:
+                  title=clean(first(r'<title\b[^>]*>(.*?)</title>',block))
+                  link=first(r'<link\b[^>]*href=["\']([^"\']+)',block)
+                  if not link:
+                      link=clean(first(r'<link\b[^>]*>(.*?)</link>',block))
+                  link=html.unescape(link).strip()
+                  date=clean(first(r'<(?:updated|published|pubDate)\b[^>]*>(.*?)</(?:updated|published|pubDate)>',block))
+                  desc=clean(first(r'<(?:summary|description|content)\b[^>]*>(.*?)</(?:summary|description|content)>',block))
+                  if title:
+                      items.append({"title":title,"link":link or fallback,"pubDate":date,"description":desc})
+
+              out["items"]=items[:6]
               if out["items"]:
                   out["status"]="ok"
               else:
                   out["status"]="error"
-                  out["error"]="Na oficialnej stranke sa nepodarilo najst aktualne oznamy."
+                  out["error"]="Oficialny RSS neobsahoval citatelne polozky."
           except Exception as exc:
               out["status"]="error"
               out["error"]=str(exc)
@@ -156,13 +143,13 @@ jobs:
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
           tags=[
-              '<script src="home-panels.js?v=20260906-2"></script>',
+              '<script src="home-panels.js?v=20260907-3"></script>',
               '<script src="rss-svit.js?v=1"></script>',
-              '<script src="rss-tatry.js?v=2"></script>',
+              '<script src="rss-tatry.js?v=3"></script>',
               '<script src="topbar-contact.js"></script>',
               '<script src="layout-master.js?v=2"></script>',
               '<script src="client-columns.js?v=1"></script>',
-              '<script src="chime.js?v=2"></script>'
+              '<script src="chime.js?v=3"></script>'
           ]
           for tag in tags:
               if tag not in s:
