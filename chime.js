@@ -2,12 +2,13 @@
   'use strict';
 
   // KUSIMA – krátka uvítacia cinkohra pri otvorení stránky.
-  // Bez časového obmedzenia a bez ďalšieho opakovania.
+  // Naplánuje sa iba raz. Ak prehliadač povolí autoplay, zaznie hneď;
+  // ak ho zablokuje, zaznie pri prvom kliknutí/dotyku/klávese.
 
   let ctx=null;
   let master=null;
-  let played=false;
-  let starting=false;
+  let scheduled=false;
+  let resumed=false;
 
   const F={D5:587.33,A5:880.00,B5:987.77,D6:1174.66,E6:1318.51,Fs6:1479.98,A6:1760.00,D7:2349.32};
 
@@ -17,7 +18,7 @@
     if(!AC) return null;
     ctx=new AC();
     master=ctx.createGain();
-    master.gain.value=0.032;
+    master.gain.value=0.034;
     master.connect(ctx.destination);
     return ctx;
   }
@@ -43,7 +44,7 @@
     o2.frequency.setValueAtTime(freq*(bell?2.004:2.01),t);
 
     gain.gain.setValueAtTime(0.0001,t);
-    gain.gain.exponentialRampToValueAtTime((bell?0.42:0.30)*strength,t+0.012);
+    gain.gain.exponentialRampToValueAtTime((bell?0.43:0.31)*strength,t+0.012);
     gain.gain.exponentialRampToValueAtTime(0.0001,t+(bell?1.35:0.58));
 
     o1.connect(gain);o2.connect(gain);
@@ -52,8 +53,15 @@
     o1.stop(t+(bell?1.42:0.64));o2.stop(t+(bell?1.10:0.48));
   }
 
-  function welcome(){
-    const t=ctx.currentTime+0.05;
+  function scheduleWelcome(){
+    if(scheduled) return;
+    const audio=makeContext();
+    if(!audio) return;
+    scheduled=true;
+
+    // Pri suspendovanom AudioContext currentTime stojí, takže tóny zostanú
+    // pripravené a odohrajú sa hneď po povolení zvuku.
+    const t=audio.currentTime+0.06;
     note(F.D5,t,0.78,-0.45,false);
     note(F.A5,t+0.17,0.68,-0.20,false);
     note(F.D6,t+0.34,0.74,0.05,false);
@@ -66,29 +74,30 @@
     note(F.D7,t+1.88,0.36,0.45,true);
   }
 
-  async function startOnce(){
-    if(played||starting) return;
-    starting=true;
-    const audio=makeContext();
-    if(!audio){starting=false;return;}
-    try{
-      if(audio.state==='suspended') await audio.resume();
-      if(audio.state!=='running'){starting=false;return;}
-      played=true;
-      welcome();
-    }catch(e){
-      starting=false;
+  function tryResume(){
+    scheduleWelcome();
+    if(!ctx||ctx.state==='running'){
+      resumed=true;
       return;
     }
-    starting=false;
+    try{
+      const p=ctx.resume();
+      if(p&&typeof p.then==='function'){
+        p.then(()=>{resumed=ctx.state==='running';}).catch(()=>{});
+      }
+    }catch(e){}
   }
 
-  // Skúsime privítanie hneď. Ak prehliadač blokuje autoplay,
-  // odohrá sa pri prvom kliknutí, dotyku alebo stlačení klávesu.
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',startOnce,{once:true});
-  else startOnce();
+  // Skusime okamzite pri nacitani.
+  scheduleWelcome();
+  tryResume();
 
+  // Ak autoplay politika prehliadaca zvuk blokuje, prvy skutocny vstup ho odomkne.
+  function unlock(){
+    if(resumed&&ctx&&ctx.state==='running') return;
+    tryResume();
+  }
   ['pointerdown','keydown','touchstart'].forEach(function(ev){
-    window.addEventListener(ev,startOnce,{once:true,passive:true});
+    window.addEventListener(ev,unlock,{passive:true});
   });
 })();
