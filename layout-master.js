@@ -54,6 +54,24 @@
     const style=document.createElement('style');
     style.id='kusima-home-service-colors';
     style.textContent=`
+      #home.room-shell{
+        background:linear-gradient(135deg,#f4f1f1 0%,#f6ecef 46%,#ece9e7 100%)!important;
+      }
+      #home.room-shell::before{
+        display:none!important;
+        background-image:none!important;
+      }
+      #home.room-shell::after{
+        content:""!important;
+        position:fixed!important;
+        inset:0!important;
+        pointer-events:none!important;
+        z-index:0!important;
+        background:
+          radial-gradient(1100px 520px at 8% 10%,rgba(255,255,255,.72),transparent 58%),
+          radial-gradient(700px 380px at 28% 82%,rgba(255,255,255,.34),transparent 62%),
+          linear-gradient(135deg,rgba(244,241,241,.98) 0%,rgba(246,236,239,.98) 43%,rgba(236,233,231,.98) 100%)!important;
+      }
       #home .hero-glass{
         background:rgba(255,249,218,.95)!important;
         border-color:rgba(225,202,92,.48)!important;
