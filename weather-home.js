@@ -16,7 +16,7 @@
     #home .hero-glass{left:12px!important;right:12px!important;bottom:12px!important;padding:8px 14px!important;border-radius:16px!important}
     #home .hero-glass-top{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important}
     #home .hero-glass-top>div{display:flex!important;align-items:baseline!important;gap:8px!important;min-width:0!important}
-    #home .hero-glass-label{font-size:10.5px!important;line-height:1!important;white-space:nowrap!important}
+    #home .hero-glass-label{display:none!important}
     #home .hero-date{font-size:18px!important;line-height:1!important;margin:0!important;white-space:nowrap!important}
     #home .hero-time{font-size:35px!important;line-height:.9!important;white-space:nowrap!important}
     #home .hero-glass-line{margin:5px 0 4px!important}
@@ -33,7 +33,6 @@
       #home .hero-glass{padding:8px 11px!important}
       #home .hero-glass-top{gap:7px!important}
       #home .hero-glass-top>div{display:block!important}
-      #home .hero-glass-label{font-size:9.5px!important}
       #home .hero-date{font-size:16px!important;margin-top:2px!important}
       #home .hero-time{font-size:31px!important}
       #home .hero-glass-small .nameday-name{font-size:19px!important}
