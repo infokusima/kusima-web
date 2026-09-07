@@ -55,62 +55,74 @@ jobs:
           with open("data/svit-news.json","w",encoding="utf-8") as f:
               json.dump(out,f,ensure_ascii=False,indent=2)
 
-      - name: Nacitaj aktualne oznamy Mesta Vysoke Tatry z oficialneho RSS
+      - name: Nacitaj novinky z regionu Vysoke Tatry
         shell: python
         run: |
-          import html, json, os, re, urllib.request
+          import json, os, urllib.request
           from datetime import datetime, timezone
+          from html.parser import HTMLParser
+          from urllib.parse import urljoin
 
-          url = "https://www.vysoketatry.sk/get_rss.php?id=1_atom_3908"
-          fallback = "https://www.vysoketatry.sk/mid/413600/ma0/all/.html"
+          sources=["https://visittatry.sk/","https://visittatry.sk/en/news"]
           os.makedirs("data", exist_ok=True)
-          out = {"source": url, "updated_at": datetime.now(timezone.utc).isoformat(), "items": []}
+          out={"source":sources[0],"updated_at":datetime.now(timezone.utc).isoformat(),"items":[]}
 
-          def clean(value):
-              if not value:
-                  return ""
-              value=re.sub(r'<!\[CDATA\[(.*?)\]\]>', r'\1', value, flags=re.S)
-              value=re.sub(r'<[^>]+>', ' ', value)
-              return ' '.join(html.unescape(value).split()).strip()
+          class ArticleParser(HTMLParser):
+              def __init__(self,base):
+                  super().__init__(convert_charrefs=True)
+                  self.base=base
+                  self.in_a=False
+                  self.href=""
+                  self.text=[]
+                  self.items=[]
 
-          def first(pattern, text):
-              m=re.search(pattern,text,re.I|re.S)
-              return m.group(1).strip() if m else ""
+              def handle_starttag(self,tag,attrs):
+                  if tag=="a" and not self.in_a:
+                      self.in_a=True
+                      self.href=dict(attrs).get("href","") or ""
+                      self.text=[]
 
-          try:
-              req=urllib.request.Request(url,headers={
-                  "User-Agent":"Mozilla/5.0 KUSIMA-web/1.0",
-                  "Accept":"application/atom+xml,application/rss+xml,application/xml,text/xml,*/*"
-              })
-              raw=urllib.request.urlopen(req,timeout=25).read().decode("utf-8","replace")
+              def handle_data(self,data):
+                  if self.in_a:
+                      self.text.append(data)
 
-              # Feed mesta obcas obsahuje znak, ktory prisny XML parser odmietne.
-              # Preto citame jednotlive entry/item bloky tolerantne ako text.
-              blocks=re.findall(r'<entry\b[^>]*>.*?</entry>',raw,re.I|re.S)
-              if not blocks:
-                  blocks=re.findall(r'<item\b[^>]*>.*?</item>',raw,re.I|re.S)
+              def handle_endtag(self,tag):
+                  if tag=="a" and self.in_a:
+                      href=self.href
+                      title=" ".join(" ".join(self.text).split()).strip()
+                      if "/clanky/" in href and len(title)>=12:
+                          bad=("všetky novinky","all news","viac","more")
+                          if title.lower() not in bad:
+                              if len(title)>170:
+                                  title=title[:167].rstrip()+"…"
+                              link=urljoin(self.base,href)
+                              if not any(x["link"]==link for x in self.items):
+                                  self.items.append({"title":title,"link":link,"pubDate":"","description":""})
+                      self.in_a=False
+                      self.href=""
+                      self.text=[]
 
-              items=[]
-              for block in blocks[:20]:
-                  title=clean(first(r'<title\b[^>]*>(.*?)</title>',block))
-                  link=first(r'<link\b[^>]*href=["\']([^"\']+)',block)
-                  if not link:
-                      link=clean(first(r'<link\b[^>]*>(.*?)</link>',block))
-                  link=html.unescape(link).strip()
-                  date=clean(first(r'<(?:updated|published|pubDate)\b[^>]*>(.*?)</(?:updated|published|pubDate)>',block))
-                  desc=clean(first(r'<(?:summary|description|content)\b[^>]*>(.*?)</(?:summary|description|content)>',block))
-                  if title:
-                      items.append({"title":title,"link":link or fallback,"pubDate":date,"description":desc})
+          errors=[]
+          for url in sources:
+              try:
+                  req=urllib.request.Request(url,headers={
+                      "User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 KUSIMA-web/1.0",
+                      "Accept":"text/html,application/xhtml+xml"
+                  })
+                  text=urllib.request.urlopen(req,timeout=25).read().decode("utf-8","replace")
+                  parser=ArticleParser(url)
+                  parser.feed(text)
+                  if parser.items:
+                      out["source"]=url
+                      out["items"]=parser.items[:6]
+                      out["status"]="ok"
+                      break
+              except Exception as exc:
+                  errors.append(str(exc))
 
-              out["items"]=items[:6]
-              if out["items"]:
-                  out["status"]="ok"
-              else:
-                  out["status"]="error"
-                  out["error"]="Oficialny RSS neobsahoval citatelne polozky."
-          except Exception as exc:
+          if not out["items"]:
               out["status"]="error"
-              out["error"]=str(exc)
+              out["error"]="; ".join(errors) if errors else "VisitTatry nevratil citatelne novinky."
 
           with open("data/tatry-news.json","w",encoding="utf-8") as f:
               json.dump(out,f,ensure_ascii=False,indent=2)
@@ -143,9 +155,9 @@ jobs:
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
           tags=[
-              '<script src="home-panels.js?v=20260907-3"></script>',
+              '<script src="home-panels.js?v=20260907-4"></script>',
               '<script src="rss-svit.js?v=1"></script>',
-              '<script src="rss-tatry.js?v=3"></script>',
+              '<script src="rss-tatry.js?v=4"></script>',
               '<script src="topbar-contact.js"></script>',
               '<script src="layout-master.js?v=2"></script>',
               '<script src="client-columns.js?v=1"></script>',
