@@ -27,6 +27,54 @@
   const nameday=document.querySelector('#home .nameday-label');
   if(nameday) nameday.textContent='Meniny má';
 
+  const lead=document.querySelector('#home .hero-copy .lead');
+  if(lead) lead.textContent='Pokračujte podľa ponuky:';
+
+  const routes=document.querySelectorAll('#home .route');
+  if(routes[0]){
+    const title=routes[0].querySelector('strong');
+    const sub=routes[0].querySelector('span:last-child');
+    if(title) title.textContent='KLIENT – vlastník bytu';
+    if(sub) sub.innerHTML='<b>Naša kuchyňa</b> · poďme spolu nájsť riešenie.';
+  }
+  if(routes[1]){
+    const sub=routes[1].querySelector('span:last-child');
+    if(sub) sub.innerHTML='<b>Naša dielňa</b> · ponuky, spolupráca a fakturácia.';
+  }
+  if(routes[2]){
+    const sub=routes[2].querySelector('span:last-child');
+    if(sub) sub.innerHTML='<b>Naša obývačka</b> · pre domy, ktoré hľadajú správcu.';
+  }
+  if(routes[3]){
+    const sub=routes[3].querySelector('span:last-child');
+    if(sub) sub.innerHTML='<b>Naša terasa / balkón</b> · články, trendy a dobré odkazy.';
+  }
+
+  if(!document.getElementById('kusima-home-service-colors')){
+    const style=document.createElement('style');
+    style.id='kusima-home-service-colors';
+    style.textContent=`
+      #home .hero-glass{
+        background:rgba(255,249,218,.95)!important;
+        border-color:rgba(225,202,92,.48)!important;
+      }
+      #home .quicklinks a{
+        background:rgba(255,249,218,.96)!important;
+        border-color:rgba(222,199,92,.58)!important;
+      }
+      #home .quicklinks a:hover,
+      #home .quicklinks a:focus-visible{
+        background:rgba(255,242,178,.98)!important;
+        border-color:rgba(210,181,52,.72)!important;
+      }
+      #home .route span:last-child b{
+        font-weight:900!important;
+        color:#405c52!important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   const tickerText='KUSIMA správca bytových domov v Poprade, vo Svite a okolí, KUSIMA Váš správca.';
   document.querySelectorAll('#home .ticker .track span').forEach(span=>{span.textContent=tickerText;});
 
