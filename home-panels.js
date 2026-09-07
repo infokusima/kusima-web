@@ -26,7 +26,7 @@
   if(side && !document.getElementById('tatryNewsLink')){
     const news=document.createElement('div');
     news.className='svit-news-card tatry-news-card';
-    news.innerHTML='<span class="city-dot">T</span><div class="city-copy"><span class="city-label">Mesto Vysoké Tatry · čerstvá správa</span><a id="tatryNewsLink" href="https://www.vysoketatry.sk/mid/413600/ma0/all/.html" target="_blank" rel="noopener">Aktuálne oznamy Mesta Vysoké Tatry ↗</a></div>';
+    news.innerHTML='<span class="city-dot">T</span><div class="city-copy"><span class="city-label">Región Vysoké Tatry · čerstvá správa</span><a id="tatryNewsLink" href="https://visittatry.sk/" target="_blank" rel="noopener">Novinky z Vysokých Tatier ↗</a></div>';
     side.appendChild(news);
   }
 
