@@ -1,0 +1,51 @@
+/* Bezpecne drobne upravy pred konsolidaciou. Bez JS a bez zasahu do dat. */
+
+/* Vysoke Tatry: kompaktnejsi jednoriadkovy pas, aby titulka ostala v prvom okne. */
+#home .tatry-news-card{
+  min-height:42px!important;
+  padding:6px 12px!important;
+  gap:9px!important;
+  border-radius:14px!important;
+}
+#home .tatry-news-card .city-label{display:none!important}
+#home .tatry-news-card .city-dot{
+  width:28px!important;
+  height:28px!important;
+  flex:0 0 28px!important;
+  border-radius:9px!important;
+  font-size:13px!important;
+}
+#home .tatry-news-card .city-copy{
+  display:block!important;
+  min-width:0!important;
+  width:100%!important;
+}
+#home .tatry-news-card a{
+  display:block!important;
+  font-size:13.5px!important;
+  line-height:1.25!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  -webkit-line-clamp:unset!important;
+}
+
+/* Podpis pod vyjadrenim v casti Zaujemca o spravu. */
+#prospectView .prospect-belief p::after{
+  content:'Dušan Javorinský · konateľ';
+  display:block;
+  margin-top:12px;
+  font-size:14px;
+  font-weight:750;
+  letter-spacing:.01em;
+  color:#4f625a;
+}
+
+@media (max-width:780px){
+  #home .tatry-news-card a{
+    white-space:normal!important;
+    display:-webkit-box!important;
+    -webkit-line-clamp:2!important;
+    -webkit-box-orient:vertical!important;
+  }
+}
