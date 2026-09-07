@@ -124,6 +124,48 @@ jobs:
           with open("data/nameday.json","w",encoding="utf-8") as f:
               json.dump(out,f,ensure_ascii=False,indent=2)
 
+      - name: Nacitaj aktualne pocasie pre Svit
+        shell: python
+        run: |
+          import json, os, urllib.request
+          from datetime import datetime, timezone
+
+          lat=49.05824
+          lon=20.19653
+          url=(
+              "https://api.open-meteo.com/v1/forecast"
+              f"?latitude={lat}&longitude={lon}"
+              "&current=temperature_2m,weather_code,is_day"
+              "&timezone=Europe%2FBratislava"
+          )
+          os.makedirs("data", exist_ok=True)
+          out={"source":url,"updated_at":datetime.now(timezone.utc).isoformat(),"status":"error"}
+          descriptions={
+              0:"Jasno",1:"Prevažne jasno",2:"Polooblačno",3:"Zamračené",
+              45:"Hmla",48:"Mrznúca hmla",51:"Slabé mrholenie",53:"Mrholenie",55:"Silné mrholenie",
+              56:"Mrznúce mrholenie",57:"Silné mrznúce mrholenie",61:"Slabý dážď",63:"Dážď",65:"Silný dážď",
+              66:"Mrznúci dážď",67:"Silný mrznúci dážď",71:"Slabé sneženie",73:"Sneženie",75:"Silné sneženie",
+              77:"Snehové zrná",80:"Slabé prehánky",81:"Prehánky",82:"Silné prehánky",85:"Slabé snehové prehánky",
+              86:"Silné snehové prehánky",95:"Búrka",96:"Búrka s krúpami",99:"Silná búrka s krúpami"
+          }
+          try:
+              req=urllib.request.Request(url,headers={"User-Agent":"KUSIMA-web/1.0"})
+              data=json.loads(urllib.request.urlopen(req,timeout=20).read().decode("utf-8"))
+              cur=data.get("current",{})
+              code=int(cur.get("weather_code",-1))
+              out.update({
+                  "status":"ok",
+                  "temperature":float(cur["temperature_2m"]),
+                  "weather_code":code,
+                  "is_day":int(cur.get("is_day",1)),
+                  "description":descriptions.get(code,"Aktuálne počasie"),
+                  "time":cur.get("time","")
+              })
+          except Exception as exc:
+              out["error"]=str(exc)
+          with open("data/weather-svit.json","w",encoding="utf-8") as f:
+              json.dump(out,f,ensure_ascii=False,indent=2)
+
       - name: Zapoj dynamicke bloky a jednotny layout
         shell: python
         run: |
@@ -132,6 +174,7 @@ jobs:
           s=p.read_text(encoding='utf-8')
           tags=[
               '<script src="home-panels.js?v=20260907-4"></script>',
+              '<script src="weather-home.js?v=2"></script>',
               '<script src="rss-svit.js?v=1"></script>',
               '<script src="rss-tatry.js?v=4"></script>',
               '<script src="topbar-contact.js"></script>',
