@@ -55,7 +55,10 @@
     style.id='kusima-home-service-colors';
     style.textContent=`
       #home.room-shell{
-        background:linear-gradient(135deg,#f4f1f1 0%,#f6ecef 46%,#ece9e7 100%)!important;
+        background:
+          radial-gradient(900px 430px at 15% 12%,rgba(255,255,255,.88) 0%,rgba(255,255,255,.42) 34%,transparent 62%),
+          radial-gradient(720px 390px at 34% 82%,rgba(255,255,255,.38) 0%,transparent 58%),
+          linear-gradient(135deg,#f2f3f4 0%,#e8eaec 46%,#dfe2e5 100%)!important;
       }
       #home.room-shell::before{
         display:none!important;
@@ -68,9 +71,8 @@
         pointer-events:none!important;
         z-index:0!important;
         background:
-          radial-gradient(1100px 520px at 8% 10%,rgba(255,255,255,.72),transparent 58%),
-          radial-gradient(700px 380px at 28% 82%,rgba(255,255,255,.34),transparent 62%),
-          linear-gradient(135deg,rgba(244,241,241,.98) 0%,rgba(246,236,239,.98) 43%,rgba(236,233,231,.98) 100%)!important;
+          linear-gradient(104deg,rgba(255,255,255,.38) 0%,rgba(255,255,255,.13) 23%,transparent 46%),
+          radial-gradient(520px 250px at 50% 8%,rgba(255,255,255,.24),transparent 70%)!important;
       }
       #home .hero-glass{
         background:rgba(255,249,218,.95)!important;
