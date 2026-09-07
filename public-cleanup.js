@@ -59,20 +59,27 @@
     }
   }
 
-  function refresh(){
+  function applyCurrentView(){
     cleanStatic();
     cleanPlan();
   }
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',refresh,{once:true});
-  else refresh();
-  setTimeout(refresh,0);
-  setTimeout(refresh,250);
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',applyCurrentView,{once:true});
+  }else{
+    applyCurrentView();
+  }
 
   document.addEventListener('click',function(e){
     const article=e.target.closest('[data-article]');
-    if(article) setTimeout(()=>cleanArticleModal(article.dataset.article),0);
-    setTimeout(refresh,0);
-    setTimeout(refresh,100);
+    if(article){
+      setTimeout(function(){ cleanArticleModal(article.dataset.article); },0);
+      return;
+    }
+
+    const opensClient=e.target.closest('#home .route, .back, .client-required-doc button');
+    if(opensClient){
+      setTimeout(applyCurrentView,0);
+    }
   });
 })();
