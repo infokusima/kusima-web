@@ -185,7 +185,7 @@ jobs:
               '<script src="articles-wave3.js?v=2"></script>',
               '<script src="source-buttons-loader-v1.js?v=1"></script>',
               '<script src="public-cleanup.js?v=3"></script>',
-              '<script src="chime.js?v=3"></script>'
+              '<script src="chime.js?v=4"></script>'
           ]
           for tag in tags:
               if tag not in s:
