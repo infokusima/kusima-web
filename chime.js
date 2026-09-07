@@ -88,6 +88,44 @@
     }catch(e){}
   }
 
+  // Jemné krátke cinknutie pri navigačnom kliknutí – ako spätná väzba na mobile.
+  function playMenuClick(){
+    const audio=makeContext();
+    if(!audio||!master) return;
+
+    const ring=function(){
+      if(!ctx||ctx.state!=='running') return;
+      const t=ctx.currentTime+0.008;
+      const gain=ctx.createGain();
+      const o1=ctx.createOscillator();
+      const o2=ctx.createOscillator();
+
+      o1.type='sine';
+      o2.type='sine';
+      o1.frequency.setValueAtTime(1180,t);
+      o1.frequency.exponentialRampToValueAtTime(1460,t+0.085);
+      o2.frequency.setValueAtTime(2360,t);
+      o2.frequency.exponentialRampToValueAtTime(2920,t+0.07);
+
+      gain.gain.setValueAtTime(0.0001,t);
+      gain.gain.exponentialRampToValueAtTime(0.20,t+0.006);
+      gain.gain.exponentialRampToValueAtTime(0.0001,t+0.11);
+
+      o1.connect(gain);o2.connect(gain);gain.connect(master);
+      o1.start(t);o2.start(t);
+      o1.stop(t+0.12);o2.stop(t+0.09);
+    };
+
+    if(ctx.state==='running'){
+      ring();
+    }else{
+      try{
+        const p=ctx.resume();
+        if(p&&typeof p.then==='function') p.then(ring).catch(()=>{});
+      }catch(e){}
+    }
+  }
+
   // Skusime okamzite pri nacitani.
   scheduleWelcome();
   tryResume();
@@ -100,4 +138,10 @@
   ['pointerdown','keydown','touchstart'].forEach(function(ev){
     window.addEventListener(ev,unlock,{passive:true});
   });
+
+  // Delegácia zachytí aj podmenu, ktoré sa vytvorí až po kliknutí.
+  document.addEventListener('click',function(e){
+    const target=e.target.closest('#home .route, #dialogView .choice, #dialogView .back, .supplier-page .back, .prospect-page .back, .explore .back');
+    if(target) playMenuClick();
+  },true);
 })();
