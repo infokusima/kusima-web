@@ -7,7 +7,11 @@
     .then(r=>r.ok?r.json():Promise.reject(new Error('rss data')))
     .then(data=>{
       const item=data&&Array.isArray(data.items)?data.items[0]:null;
-      if(!item||!item.title) return;
+      if(!item||!item.title){
+        target.href=fallback;
+        target.textContent='Aktuálne oznamy Mesta Vysoké Tatry ↗';
+        return;
+      }
       target.href=item.link||fallback;
       target.textContent=item.title+' ↗';
     })
