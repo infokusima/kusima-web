@@ -174,7 +174,7 @@ jobs:
           s=p.read_text(encoding='utf-8')
           tags=[
               '<script src="home-panels.js?v=20260907-4"></script>',
-              '<script src="weather-home.js?v=3"></script>',
+              '<script src="weather-home.js?v=4"></script>',
               '<script src="rss-svit.js?v=1"></script>',
               '<script src="rss-tatry.js?v=4"></script>',
               '<script src="topbar-contact.js"></script>',
