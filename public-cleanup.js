@@ -1,31 +1,6 @@
 (function(){
   'use strict';
 
-  /* Po prvej konsolidacii uz je aktualny layout nacitany priamo v indexe.
-     Stary home-v3.css sa vsak este mohol dodatocne vlozit z design-extra.js a na chvilu
-     prepisat rozmery titulky. Odstranime iba tuto jednu staru vrstvu, bez observera a bez slucky. */
-  document.querySelectorAll('link[rel="stylesheet"]').forEach(link=>{
-    const href=link.getAttribute('href')||'';
-    if(href.includes('home-v3.css')) link.remove();
-  });
-
-  /* Pravý okraj: posuvame iba text, nie panel ani fotografiu. */
-  if(!document.getElementById('kusima-right-text-inset')){
-    const style=document.createElement('style');
-    style.id='kusima-right-text-inset';
-    style.textContent=`
-      #home .topbar > .small{margin-right:18px!important;}
-      #home .hero-time{margin-right:18px!important;}
-      #home .hero-weather{margin-right:18px!important;}
-      @media(max-width:700px){
-        #home .topbar > .small{margin-right:8px!important;}
-        #home .hero-time{margin-right:10px!important;}
-        #home .hero-weather{margin-right:10px!important;}
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
   function setText(el,text){
     if(el && el.textContent!==text) el.textContent=text;
   }
