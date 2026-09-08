@@ -166,31 +166,32 @@ jobs:
           with open("data/weather-svit.json","w",encoding="utf-8") as f:
               json.dump(out,f,ensure_ascii=False,indent=2)
 
-      - name: Zapoj dynamicke bloky a jednotny layout
+      - name: Zostav jeden stabilny CSS subor
         shell: python
         run: |
           from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-          tags=[
-              '<script src="home-panels.js?v=20260907-4"></script>',
-              '<script src="weather-home.js?v=4"></script>',
-              '<script src="rss-svit.js?v=1"></script>',
-              '<script src="rss-tatry.js?v=4"></script>',
-              '<script src="topbar-contact.js"></script>',
-              '<script src="layout-master.js?v=6"></script>',
-              '<script src="client-columns.js?v=1"></script>',
-              '<script src="content-v2.js?v=1"></script>',
-              '<script src="articles-wave2.js?v=1"></script>',
-              '<script src="articles-wave3.js?v=2"></script>',
-              '<script src="source-buttons-loader-v1.js?v=1"></script>',
-              '<script src="public-cleanup.js?v=4"></script>',
-              '<script src="chime.js?v=4"></script>'
+
+          css_files=[
+              'styles.css',
+              'overrides.css',
+              'rooms-v2.css',
+              'layout-v1.css',
+              'mood-v1.css',
+              'mood-v2.css',
+              'preconsolidation-fixes.css',
+              'content-v2.css',
+              'source-buttons-v1.css',
+              'components-runtime.css',
+              'home-current-v1.css',
           ]
-          for tag in tags:
-              if tag not in s:
-                  s=s.replace('</body>',tag+'</body>')
-          p.write_text(s,encoding='utf-8')
+
+          chunks=['/* KUSIMA site.css – generované deterministicky pri deployi. */\n']
+          for filename in css_files:
+              p=Path(filename)
+              chunks.append(f'\n/* ===== {filename} ===== */\n')
+              chunks.append(p.read_text(encoding='utf-8'))
+              chunks.append('\n')
+          Path('site.css').write_text(''.join(chunks),encoding='utf-8')
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
