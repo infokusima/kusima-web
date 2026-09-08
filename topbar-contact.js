@@ -1,17 +1,5 @@
 (function(){
-  const style=document.createElement('style');
-  style.textContent=`
-    .topbar .logo{display:flex;align-items:center;min-width:0}
-    .topbar .brand-line{display:inline-flex;align-items:center;gap:10px;min-width:0;white-space:nowrap}
-    .topbar .brand-sro{font-size:13px;font-weight:700;letter-spacing:.02em;color:#627069}
-    .topbar .brand-contact{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#53615b;text-decoration:none;font-weight:650}
-    .topbar .brand-contact:hover{color:#173d34;text-decoration:underline}
-    .topbar .brand-sep{color:#bcc8c2;font-size:12px}
-    .topbar .phone-icon{font-size:14px;line-height:1}
-    @media(max-width:1050px){.topbar .brand-contact.email{display:none}.topbar .brand-sep.sep-email{display:none}}
-    @media(max-width:760px){.topbar .brand-sro,.topbar .brand-contact{display:none}.topbar .brand-sep{display:none}}
-  `;
-  document.head.appendChild(style);
+  'use strict';
 
   function decorate(root=document){
     root.querySelectorAll('.topbar .logo-name').forEach(name=>{
@@ -39,5 +27,13 @@
   }
 
   decorate();
-  new MutationObserver(records=>records.forEach(r=>r.addedNodes.forEach(n=>{if(n.nodeType===1) decorate(n)}))).observe(document.body,{childList:true,subtree:true});
+
+  /* Prospect sa zatiaľ vytvára skriptom. Sledujeme len pridanie nového view,
+     nie celý obsah stránky a nič spätne neprepisujeme. */
+  const observer=new MutationObserver(records=>{
+    records.forEach(r=>r.addedNodes.forEach(n=>{
+      if(n.nodeType===1) decorate(n);
+    }));
+  });
+  observer.observe(document.body,{childList:true});
 })();
