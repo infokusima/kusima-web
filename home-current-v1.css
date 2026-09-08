@@ -19,6 +19,11 @@
 #home .quicklinks a:hover,#home .quicklinks a:focus-visible{background:rgba(255,242,178,.98)!important;border-color:rgba(210,181,52,.72)!important}
 #home .route span:last-child b{font-weight:900!important;color:#405c52!important}
 
+/* Pravý okraj – posúvame iba text, nie panel ani fotografiu. */
+#home .topbar > .small{padding-right:20px!important}
+#home .hero-time{margin-right:20px!important}
+#home .hero-weather{margin-right:20px!important}
+
 /* Kompaktný kalendár/čas – staticky, aby panel po načítaní neposkakoval. */
 #home .hero-glass{left:12px!important;right:12px!important;bottom:12px!important;padding:8px 14px!important;border-radius:16px!important}
 #home .hero-glass-top{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important}
@@ -36,6 +41,9 @@
 #home .hero-weather-fallback{font-size:20px;line-height:1;width:25px;text-align:center}
 
 @media(max-width:560px){
+  #home .topbar > .small{padding-right:8px!important}
+  #home .hero-time{margin-right:10px!important}
+  #home .hero-weather{margin-right:10px!important}
   #home .hero-glass{padding:8px 11px!important}
   #home .hero-glass-top{gap:7px!important}
   #home .hero-glass-top>div{display:block!important}
