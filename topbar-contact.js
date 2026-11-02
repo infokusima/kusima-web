@@ -20,9 +20,19 @@
       const tel=document.createElement('a');
       tel.className='brand-contact phone';
       tel.href='tel:+421919231998';
-      tel.innerHTML='<span class="phone-icon" aria-hidden="true">☎</span><span>0919 231 998</span>';
+      tel.title='Konateľ / technické záležitosti';
+      tel.innerHTML='<span class="phone-icon" aria-hidden="true">☎</span><span>Konateľ/tech. 0919 231 998</span>';
       tel.addEventListener('click',e=>e.stopPropagation());
-      wrap.append(tel);
+      const sep=document.createElement('span');
+      sep.className='brand-sep';
+      sep.textContent='·';
+      const economic=document.createElement('a');
+      economic.className='brand-contact phone';
+      economic.href='tel:+421919134142';
+      economic.title='Spoločníčka / ekonomické záležitosti';
+      economic.innerHTML='<span class="phone-icon" aria-hidden="true">☎</span><span>Spoločníčka/ekon. 0919 134 142</span>';
+      economic.addEventListener('click',e=>e.stopPropagation());
+      wrap.append(tel,sep,economic);
     });
   }
 

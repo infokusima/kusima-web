@@ -77,7 +77,7 @@
 
   async function copyText(text,el){try{await navigator.clipboard.writeText(text);}catch(e){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}if(el){const old=el.dataset.oldText||el.textContent;el.dataset.oldText=old;el.textContent='Skopírované ✓';setTimeout(()=>el.textContent=old,1200);}}
   document.addEventListener('click',e=>{const row=e.target.closest('.copy-line');if(row) copyText(row.dataset.copy,row.querySelector('i'));});
-  window.copySupplierData=function(btn){copyText(['KUSIMA, s.r.o. SVIT','Sídlo: Rovná 599/17, 058 01 Poprad','IČO: 36450090','DIČ: 2020015833','IČ DPH: nie sme platiteľom DPH','IBAN: SK79 0200 0000 0013 8969 3857','E-mail: info.kusima@gmail.com','Telefón: +421 919 231 998','Kancelária: Mierová 177, 059 21 Svit','Obchodný register: Okresný súd Prešov, oddiel Sro, vložka 10657/P'].join('\n'),btn);};
+  window.copySupplierData=function(btn){copyText(['KUSIMA, s.r.o. SVIT','Sídlo: Rovná 599/17, 058 01 Poprad','IČO: 36450090','DIČ: 2020015833','IČ DPH: nie sme platiteľom DPH','IBAN: SK79 0200 0000 0013 8969 3857','E-mail: info.kusima@gmail.com','Konateľ / technické záležitosti: +421 919 231 998','Spoločníčka / ekonomické záležitosti: +421 919 134 142','Kancelária: Mierová 177, 059 21 Svit','Obchodný register: Okresný súd Prešov, oddiel Sro, vložka 10657/P'].join('\n'),btn);};
 
   const greeting=document.querySelector('#home .hero-glass-label'); if(greeting) greeting.textContent='Pekný deň praje Váš správca';
   const daily=document.querySelectorAll('#home .hero-glass-small span');
